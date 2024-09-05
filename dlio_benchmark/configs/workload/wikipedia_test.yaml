@@ -1,0 +1,41 @@
+# 8 node run with 4 GPUs per node and TPSIZE=4 and PPSIZE=8
+model: wikipedia_test
+
+framework: pytorch
+
+workflow:
+  generate_data: False
+  train: True
+  profiling: False
+
+dataset: 
+  data_folder: /mnt/beegfs-staging/ssd_pool/docker/user/hadoop-dolphinfs/yanghao113/dataset
+  # data_folder: /data13/yanghao/dlio/dataset/wikipedia
+  format: megatron
+  num_files_train: 1
+  # num_samples_per_file: 6814164
+  # num_samples_per_file: 109026624
+  num_samples_per_file: 26843545
+  record_length: 20480
+  
+reader: 
+  data_loader: megatron
+  batch_size: 1024
+  read_type: memory
+  read_threads: 2
+  file_shuffle: seed
+  sample_shuffle: seed
+  num_fetch_workers:  2
+  fetch_impl : asyncio
+  batch_pool : 10
+
+train:
+  epochs: 3
+  computation_time: 0.03 # every iteration has 290 steps and each iteration is 8.9 sec.
+
+output:
+  log_file: dlio.log
+
+profiling:
+  profiler: iostat
+  iostat_devices: nvme0n1
